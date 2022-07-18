@@ -11,11 +11,18 @@ class SetupCommands(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx, quantity: discord.Option(int), user: discord.Option(discord.User, required = True, default = None)):
         res=""
+        msg = []
         if user == None:
             await ctx.channel.purge(limit=quantity)
             res+=(f"purging {quantity} messages from the channel")
         else:
-            await ctx.channel.purge(limit=quantity, check=lambda msg: msg.author == user)
+            async for m in ctx.channel.history():
+                if len(msg) == quantity:
+                    break
+                if m.author == user:
+                    msg.append(m)
+            await ctx.channel.delete_messages(msg)
+            #await ctx.channel.purge(limit=quantity, check=lambda msg: msg.author == user)
             res+=(f"purging {quantity} messages from {user} in the channel")
         await ctx.respond(res)
 
