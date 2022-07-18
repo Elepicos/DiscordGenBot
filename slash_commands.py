@@ -15,6 +15,7 @@ class SetupCommands(commands.Cog):
         if user == None:
             await ctx.channel.purge(limit=quantity)
             res+=(f"purging {quantity} messages from the channel")
+            print(f"purging {quantity} messages from {ctx.channel}")
         else:
             async for m in ctx.channel.history():
                 if len(msg) == quantity:
@@ -24,6 +25,7 @@ class SetupCommands(commands.Cog):
             await ctx.channel.delete_messages(msg)
             #await ctx.channel.purge(limit=quantity, check=lambda msg: msg.author == user)
             res+=(f"purging {quantity} messages from {user} in the channel")
+            print(f"purging {quantity} messages from {user} in {ctx.channel}")
         await ctx.respond(res)
 
     @purge.error
