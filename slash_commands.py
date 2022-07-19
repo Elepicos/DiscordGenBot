@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord.commands import slash_command, Option
 
-class SetupCommands(commands.Cog):
+class ModCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -20,6 +20,7 @@ class SetupCommands(commands.Cog):
             async for m in ctx.channel.history():
                 if len(msg) == quantity:
                     break
+                
                 if m.author == user:
                     msg.append(m)
             await ctx.channel.delete_messages(msg)
@@ -32,4 +33,11 @@ class SetupCommands(commands.Cog):
     async def purge_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
             await ctx.respond("You are not authorized to use this command")
+        elif isinstance(error, discord.ClientException):
+            await ctx.respond("Messages could not be deleted")
 
+class SetupCommands(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    
