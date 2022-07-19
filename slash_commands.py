@@ -1,10 +1,12 @@
+from operator import truediv
 import discord
 from discord.ext import commands
 from discord.commands import slash_command, Option
 
 class ModCommands(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, db_connection):
         self.bot = bot
+        self.db_connection = db_connection
 
     purge_desc="This command purges a given number of messages"
     @slash_command(description=purge_desc)
@@ -37,7 +39,16 @@ class ModCommands(commands.Cog):
             await ctx.respond("Messages could not be deleted")
 
 class SetupCommands(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, db_connection):
         self.bot = bot
+        self.db_connection = db_connection
 
-    
+    @slash_command(name="setlogchannel", description="Set main channel for server logs")
+    @commands.has_permissions(administrator=True)
+    async def set_log_channel(self, ctx, channel: discord.Option(discord.TextChannel, required = True, default = None)):
+        return #TODO check database for existing channel, then rewrite
+
+    @commands.has_permissions(administrator=True)
+    @slash_command(description="Disables a specific logging module")
+    async def disable(self, ctx, module: discord.Option(input_type=str)):
+        return #TODO finish setting up option for choices of module

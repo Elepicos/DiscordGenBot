@@ -4,6 +4,7 @@ import discord
 
 #command cog imports
 from slash_commands import ModCommands
+from slash_commands import SetupCommands
 
 #import important data from yaml (token, db creds, etc)
 def read_config():
@@ -26,7 +27,9 @@ db_connection = mysql.connect(host=HOST, database=DATABASE, user=USER, password=
 print("Connected to:", db_connection.get_server_info())
 
 bot = discord.Bot(debug_guilds=[997040506938867813])
-setup_commands = ModCommands(bot)
+mod_commands = ModCommands(bot, db_connection)
+bot.add_cog(mod_commands)
+setup_commands = SetupCommands(bot, db_connection)
 bot.add_cog(setup_commands)
 
 @bot.event
