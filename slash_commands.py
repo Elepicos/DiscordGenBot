@@ -2,6 +2,7 @@ from operator import truediv
 import discord
 from discord.ext import commands
 from discord.commands import slash_command, Option
+import mysql.connector as  mysql
 
 class ModCommands(commands.Cog):
     def __init__(self, bot, db_connection):
