@@ -54,3 +54,14 @@ class SetupCommands(commands.Cog):
     @slash_command(description="Disables a specific logging module")
     async def disable(self, ctx, module: discord.Option(input_type=str)):
         return #TODO finish setting up option for choices of module
+    
+    # deleted messages
+    # edited messages
+    # user join
+    # user leave
+    # purge
+    # nickname changed
+    # vc join
+    # vc leave
+    # mentions minecraft
+    
