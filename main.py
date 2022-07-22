@@ -26,7 +26,10 @@ db_connection = mysql.connect(host=HOST, database=DATABASE, user=USER, password=
 
 print("Connected to:", db_connection.get_server_info())
 
+#initialize bot
 bot = discord.Bot(debug_guilds=[997040506938867813])
+
+#add command cogs from commands file
 mod_commands = ModCommands(bot, db_connection)
 bot.add_cog(mod_commands)
 setup_commands = SetupCommands(bot, db_connection)
@@ -36,6 +39,7 @@ bot.add_cog(setup_commands)
 async def on_ready(): # bot initialized correctly
     print(f"{bot.user} is ready and online!")
 
+#ping check command
 @bot.command(description="Sends the bot's latency.") # this decorator makes a slash command
 async def ping(ctx): # a slash command will be created with the name "ping"
     await ctx.respond(f"Pong! Latency is {bot.latency}")

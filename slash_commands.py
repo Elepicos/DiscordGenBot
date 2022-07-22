@@ -32,6 +32,7 @@ class ModCommands(commands.Cog):
             print(f"purging {quantity} messages from {user} in {ctx.channel}")
         await ctx.respond(res)
 
+    #purge error handling
     @purge.error
     async def purge_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
