@@ -42,6 +42,13 @@ async def on_ready(): # bot initialized correctly
 #ping check command
 @bot.command(description="Sends the bot's latency.") # this decorator makes a slash command
 async def ping(ctx): # a slash command will be created with the name "ping"
+    db_cursor = db_connection.cursor()
+    db_cursor.execute("SELECT * FROM ServerInfo")
+    result = db_cursor.fetchall()
+    db_cursor.close()
+    for x in result:
+        print(x)
     await ctx.respond(f"Pong! Latency is {bot.latency}")
+    
 
 bot.run(config["Token"])

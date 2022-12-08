@@ -48,6 +48,14 @@ class SetupCommands(commands.Cog):
     @slash_command(name="setlogchannel", description="Set main channel for server logs")
     @commands.has_permissions(administrator=True)
     async def set_log_channel(self, ctx, channel: discord.Option(discord.TextChannel, required = True, default = None)):
+        db_cursor = self.db_connection.cursor()
+        sql = "SELECT * FROM ServerInfo WHERE guild_id="+str(channel.id)
+        db_cursor.execute(sql)
+        query = db_cursor.fetchall()
+        for x in query:
+            print(x)
+            if x=="":
+                print("empty")
         return #TODO check database for existing channel, then rewrite
 
     @commands.has_permissions(administrator=True)
@@ -55,13 +63,18 @@ class SetupCommands(commands.Cog):
     async def disable(self, ctx, module: discord.Option(input_type=str)):
         return #TODO finish setting up option for choices of module
     
-    # deleted messages
-    # edited messages
-    # user join
-    # user leave
-    # purge
-    # nickname changed
-    # vc join
-    # vc leave
-    # mentions minecraft
-    
+
+
+
+
+    # BoolString module order
+    #   1  deleted messages
+    #   2  edited messages
+    #   3  user join
+    #   4  user leave
+    #   5  purge
+    #   6  nickname changed
+    #   7  vc join
+    #   8  vc leave
+    #   9  mentions minecraft
+    #   10 repost deleted videos
