@@ -50,15 +50,26 @@ class SetupCommands(commands.Cog):
     async def set_log_channel(self, ctx, channel: discord.Option(discord.TextChannel, required = True, default = None)):
         try:
             db_cursor = self.db_connection.cursor()
-            sql = "SELECT * FROM ServerInfo WHERE guild_id="+str(channel.id)
+            sql = "SELECT * FROM ServerInfo WHERE guild_id="+str(ctx.guild.id)
             db_cursor.execute(sql)
             query = db_cursor.fetchall()
+            db_cursor.close()
             for x in query:
                 print(x)
                 if x=="":
+                    db_cursor = self.db_connection.cursor()
+                    sql = "INSERT INTO ServerInfo VALUES("+str(ctx.guild.id)+", "+str(channel.id)+", "
+
+                    modules = ""
+                    for i in range(255):
+                        modules+="0"
+
                     print("empty")
+            
+        # If nothing found, add entry
         except:
-            print("kys") # WORKS
+            print("Get fucked nerd") # WORKS
+            
         return #TODO check database for existing channel, then rewrite
 
     @commands.has_permissions(administrator=True)
