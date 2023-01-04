@@ -59,7 +59,7 @@ class SetupCommands(commands.Cog):
             # If no entry found, insert new entry with NULL modules enabled
             if(len(present)==0):
                 db_cursor = self.db_connection.cursor()
-                sql = "INSERT INTO `ServerInfo` VALUES (\'"+str(ctx.guild.id)+"\', \'"+str(channel.id)+"\', NULL)"
+                sql = "INSERT INTO `ServerInfo` VALUES (\'"+str(ctx.guild.id)+"\', \'"+str(channel.id)+"\', \""+ModuleStringHelper.moduleStringFiller("")+"\")"
                 db_cursor.execute(sql)
                 self.db_connection.commit()
 
@@ -83,10 +83,8 @@ class SetupCommands(commands.Cog):
     @commands.has_permissions(administrator=True)
     @slash_command(description="Disables a specific logging module")
     async def enable_module(self, ctx, module: discord.Option(input_type=str)):
-        length = len(module)
-        for i in range(0, 255-length):
-            module+="0"
-        print(len(module))
+        module = ModuleStringHelper.moduleStringFiller(module)
+        await ctx.respond(len(module))
         return #TODO finish setting up option for choices of module
 
     @commands.has_permissions(administrator=True)
@@ -94,6 +92,12 @@ class SetupCommands(commands.Cog):
     async def disable_module(self, ctx, module: discord.Option(input_type=str)):
         return #TODO finish setting up option for choices of module
     
+    
+class ModuleStringHelper:
+    def moduleStringFiller(mods):
+        for i in range(0, 255-len(mods)):
+            mods+="0"
+        return mods
     
 
 
