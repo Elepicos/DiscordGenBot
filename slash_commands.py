@@ -1,4 +1,3 @@
-from operator import truediv
 import discord
 from discord.ext import commands
 from discord.commands import slash_command, Option
@@ -49,16 +48,33 @@ class SetupCommands(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def set_log_channel(self, ctx, channel: discord.Option(discord.TextChannel, required = True, default = None)):
         try:
-            db_cursor = self.db_connection.cursor()
-            sql = "INSERT INTO ServerInfo VALUES (\'"+str(ctx.guild.id)+"\', \'"+str(channel.id)+"\', "
-            modules = ""
-            # for i in range(255):
-            #     modules+="0"
-            modules+="NULL);"
-            sql+=modules
-            print(sql)
-            db_cursor.execute(sql)   
-        # If nothing found, add entry
+
+            # Check for existing guild entry in database
+            checkDbForEntry = "SELECT * FROM `ServerInfo` WHERE guild_id="+str(ctx.guild.id)
+            checkDb_cursor = self.db_connection.cursor()
+            checkDb_cursor.execute(checkDbForEntry)
+            present = checkDb_cursor.fetchall()
+            checkDb_cursor.close()
+
+            # If no entry found, insert new entry with NULL modules enabled
+            if(len(present)==0):
+                db_cursor = self.db_connection.cursor()
+                sql = "INSERT INTO `ServerInfo` VALUES (\'"+str(ctx.guild.id)+"\', \'"+str(channel.id)+"\', NULL)"
+                db_cursor.execute(sql)
+                self.db_connection.commit()
+
+                # Success Responses to log channel and channel called in
+                await ctx.respond("Logging enabled for this server")
+                await channel.send("Logs enabled in this channel")
+            if(len(present)==1):
+                db_cursor = self.db_connection.cursor()
+                sql = "UPDATE `ServerInfo` SET log_id="+str(channel.id)+" WHERE guild_id="+str(ctx.guild.id)
+                db_cursor.execute(sql)
+                self.db_connection.commit()
+
+                await ctx.respond("Log channel updated for this server")
+                await channel.send("Logs enabled in this channel")
+            
         except:
             print("Get fucked nerd") # WORKS
             
@@ -66,8 +82,18 @@ class SetupCommands(commands.Cog):
 
     @commands.has_permissions(administrator=True)
     @slash_command(description="Disables a specific logging module")
-    async def disable(self, ctx, module: discord.Option(input_type=str)):
+    async def enable_module(self, ctx, module: discord.Option(input_type=str)):
+        length = len(module)
+        for i in range(0, 255-length):
+            module+="0"
+        print(len(module))
         return #TODO finish setting up option for choices of module
+
+    @commands.has_permissions(administrator=True)
+    @slash_command(description="Disables a specific logging module")
+    async def disable_module(self, ctx, module: discord.Option(input_type=str)):
+        return #TODO finish setting up option for choices of module
+    
     
 
 
