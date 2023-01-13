@@ -35,9 +35,21 @@ bot.add_cog(mod_commands)
 setup_commands = SetupCommands(bot, db_connection)
 bot.add_cog(setup_commands)
 
+bot.local_db_cache = [("","","")]
+
 @bot.event
 async def on_ready(): # bot initialized correctly
     print(f"{bot.user} is ready and online!")
+    db_cursor = db_connection.cursor()
+    db_cursor.execute("SELECT * FROM ServerInfo")
+    result = db_cursor.fetchall()
+    db_cursor.close()
+    bot.local_db_cache.clear()
+    for x in result:
+        bot.local_db_cache.append(x)
+    #print(bot.local_db_cache) 
+    #print(bot.local_db_cache[0][0])
+
 
 #ping check command
 @bot.command(description="Sends the bot's latency.") # this decorator makes a slash command

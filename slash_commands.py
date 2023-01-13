@@ -82,7 +82,15 @@ class SetupCommands(commands.Cog):
 
     @commands.has_permissions(administrator=True)
     @slash_command(description="Disables a specific logging module")
-    async def enable_module(self, ctx, module: discord.Option(input_type=str)):
+    async def enable_module(self, ctx, module: discord.Option(input_type=int, choices={
+        # List of modules with index
+        discord.OptionChoice("User Join", "0"),
+        discord.OptionChoice("User Leave", "1"),
+        discord.OptionChoice("Message Deleted", "2"),
+        discord.OptionChoice("Message Edited", "3"),
+        discord.OptionChoice("Nickname Changed", "4"),
+        discord.OptionChoice("Purge Command Used", "5")
+    })):
         module = ModuleStringHelper.moduleStringFiller(module)
         await ctx.respond(len(module))
         return #TODO finish setting up option for choices of module
@@ -90,6 +98,7 @@ class SetupCommands(commands.Cog):
     @commands.has_permissions(administrator=True)
     @slash_command(description="Disables a specific logging module")
     async def disable_module(self, ctx, module: discord.Option(input_type=str)):
+        commands.bot
         return #TODO finish setting up option for choices of module
     
     
