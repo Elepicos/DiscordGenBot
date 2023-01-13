@@ -74,7 +74,7 @@ class SetupCommands(commands.Cog):
 
                 await ctx.respond("Log channel updated for this server")
                 await channel.send("Logs enabled in this channel")
-            
+            self.reload_cache()
         except:
             print("Get fucked nerd") # WORKS
             
@@ -100,6 +100,15 @@ class SetupCommands(commands.Cog):
     async def disable_module(self, ctx, module: discord.Option(input_type=str)):
         commands.bot
         return #TODO finish setting up option for choices of module
+
+    async def reload_cache(self):
+        db_cursor = self.db_connection.cursor()
+        db_cursor.execute("SELECT * FROM ServerInfo")
+        result = db_cursor.fetchall()
+        db_cursor.close()
+        self.bot.local_db_cache.clear()
+        for x in result:
+            self.bot.local_db_cache.append(x)
     
     
 class ModuleStringHelper:

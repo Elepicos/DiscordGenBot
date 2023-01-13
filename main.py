@@ -40,13 +40,7 @@ bot.local_db_cache = [("","","")]
 @bot.event
 async def on_ready(): # bot initialized correctly
     print(f"{bot.user} is ready and online!")
-    db_cursor = db_connection.cursor()
-    db_cursor.execute("SELECT * FROM ServerInfo")
-    result = db_cursor.fetchall()
-    db_cursor.close()
-    bot.local_db_cache.clear()
-    for x in result:
-        bot.local_db_cache.append(x)
+    reload_cache()
     #print(bot.local_db_cache) 
     #print(bot.local_db_cache[0][0])
 
@@ -61,6 +55,14 @@ async def ping(ctx): # a slash command will be created with the name "ping"
     for x in result:
         print(x)
     await ctx.respond(f"Pong! Latency is {bot.latency}")
-    
+
+def reload_cache():
+    db_cursor = db_connection.cursor()
+    db_cursor.execute("SELECT * FROM ServerInfo")
+    result = db_cursor.fetchall()
+    db_cursor.close()
+    bot.local_db_cache.clear()
+    for x in result:
+        bot.local_db_cache.append(x)
 
 bot.run(config["Token"])
