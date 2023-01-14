@@ -91,8 +91,10 @@ class SetupCommands(commands.Cog):
         discord.OptionChoice("Nickname Changed", "4"),
         discord.OptionChoice("Purge Command Used", "5")
     })):
-        module = ModuleStringHelper.moduleStringFiller(module)
-        await ctx.respond(len(module))
+        print(self.get_guild_cache(ctx))
+
+        moduleString = ModuleStringHelper.moduleStringFiller(module)
+        await ctx.respond(len(moduleString))
         return #TODO finish setting up option for choices of module
 
     @commands.has_permissions(administrator=True)
@@ -101,6 +103,11 @@ class SetupCommands(commands.Cog):
         commands.bot
         return #TODO finish setting up option for choices of module
 
+    async def get_guild_cache(self, ctx):
+        for x in self.bot.local_db_cache:
+            if x[0] == str(ctx.guild.id):
+                return x
+                
     async def reload_cache(self):
         db_cursor = self.db_connection.cursor()
         db_cursor.execute("SELECT * FROM ServerInfo")
@@ -130,5 +137,5 @@ class ModuleStringHelper:
     #   6  nickname changed
     #   7  vc join
     #   8  vc leave
-    #   9  mentions minecraft
-    #   10 repost deleted videos
+    #   9  repost deleted videos
+    #   10 
