@@ -48,6 +48,7 @@ async def on_ready(): # bot initialized correctly
 #ping check command
 @bot.command(description="Sends the bot's latency.") # this decorator makes a slash command
 async def ping(ctx): # a slash command will be created with the name "ping"
+    print(bot.local_db_cache)
     await ctx.respond(f"Pong! Latency is {bot.latency}")
 
 def reload_cache():

@@ -62,6 +62,7 @@ class SetupCommands(commands.Cog):
                 sql = "INSERT INTO `ServerInfo` VALUES (\'"+str(ctx.guild.id)+"\', \'"+str(channel.id)+"\', \""+ModuleStringHelper.moduleStringFiller("")+"\")"
                 db_cursor.execute(sql)
                 self.db_connection.commit()
+                db_cursor.close()
 
                 # Success Responses to log channel and channel called in
                 await ctx.respond("Logging enabled for this server")
@@ -71,6 +72,7 @@ class SetupCommands(commands.Cog):
                 sql = "UPDATE `ServerInfo` SET log_id="+str(channel.id)+" WHERE guild_id="+str(ctx.guild.id)
                 db_cursor.execute(sql)
                 self.db_connection.commit()
+                db_cursor.close()
 
                 await ctx.respond("Log channel updated for this server")
                 await channel.send("Logs enabled in this channel")
@@ -91,23 +93,62 @@ class SetupCommands(commands.Cog):
         discord.OptionChoice("Nickname Changed", "4"),
         discord.OptionChoice("Purge Command Used", "5")
     })):
-        print(self.get_guild_cache(ctx))
+        guild_cache = await self.get_guild_cache(ctx.guild.id)
 
-        moduleString = ModuleStringHelper.moduleStringFiller(module)
-        await ctx.respond(len(moduleString))
-        return #TODO finish setting up option for choices of module
+        moduleString = ''
+        if module == str(0):
+            moduleString = "1"+guild_cache[2][1:]
+        else:
+            for i in range(len(guild_cache[2])):
+                if str(i) == module:
+                    moduleString = guild_cache[2][:i]+'1'+guild_cache[2][i+1:]
+        moduleString = ModuleStringHelper.moduleStringFiller(moduleString)
+
+        db_cursor = self.db_connection.cursor()
+        sql = "UPDATE `ServerInfo` SET modules='"+str(moduleString)+"' WHERE guild_id="+str(ctx.guild.id)
+        db_cursor.execute(sql)
+        self.db_connection.commit()
+        db_cursor.close()
+
+        await self.reload_cache()
+        await ctx.respond("Module enabled")
 
     @commands.has_permissions(administrator=True)
     @slash_command(description="Disables a specific logging module")
-    async def disable_module(self, ctx, module: discord.Option(input_type=str)):
-        commands.bot
-        return #TODO finish setting up option for choices of module
+    async def disable_module(self, ctx, module: discord.Option(input_type=int, choices={
+        # List of modules with index
+        discord.OptionChoice("User Join", "0"),
+        discord.OptionChoice("User Leave", "1"),
+        discord.OptionChoice("Message Deleted", "2"),
+        discord.OptionChoice("Message Edited", "3"),
+        discord.OptionChoice("Nickname Changed", "4"),
+        discord.OptionChoice("Purge Command Used", "5")
+        })):
+        guild_cache = await self.get_guild_cache(ctx.guild.id)
+
+        moduleString = ''
+        if module == str(0):
+            moduleString = '0'+guild_cache[2][1:]
+        else:
+            for i in range(len(guild_cache[2])):
+                if str(i) == module:
+                    moduleString = guild_cache[2][:i]+'0'+guild_cache[2][i+1:]
+        moduleString = ModuleStringHelper.moduleStringFiller(moduleString)
+
+        db_cursor = self.db_connection.cursor()
+        sql = "UPDATE `ServerInfo` SET modules='"+str(moduleString)+"' WHERE guild_id="+str(ctx.guild.id)
+        db_cursor.execute(sql)
+        self.db_connection.commit()
+        db_cursor.close()
+
+        await self.reload_cache()
+        await ctx.respond("Module disabled")
 
     async def get_guild_cache(self, ctx):
         for x in self.bot.local_db_cache:
-            if x[0] == str(ctx.guild.id):
+            if x[0] == ctx:
                 return x
-                
+
     async def reload_cache(self):
         db_cursor = self.db_connection.cursor()
         db_cursor.execute("SELECT * FROM ServerInfo")
