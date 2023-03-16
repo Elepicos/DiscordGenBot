@@ -5,6 +5,7 @@ import discord
 #command cog imports
 from slash_commands import ModCommands
 from slash_commands import SetupCommands
+from event_handlers import ModuleListeners
 
 #import important data from yaml (token, db creds, etc)
 def read_config():
@@ -34,8 +35,10 @@ mod_commands = ModCommands(bot, db_connection)
 bot.add_cog(mod_commands)
 setup_commands = SetupCommands(bot, db_connection)
 bot.add_cog(setup_commands)
+module_listeners = ModuleListeners(bot, db_connection)
+bot.add_cog(module_listeners)
 
-bot.local_db_cache = [("","","")]
+bot.local_db_cache = [("", "", "")]
 
 @bot.event
 async def on_ready(): # bot initialized correctly

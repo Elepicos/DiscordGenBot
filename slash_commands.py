@@ -11,12 +11,12 @@ class ModCommands(commands.Cog):
     purge_desc="This command purges a given number of messages"
     @slash_command(description=purge_desc)
     @commands.has_permissions(manage_messages=True)
-    async def purge(self, ctx, quantity: discord.Option(int), user: discord.Option(discord.User, required = True, default = None)):
-        res=""
+    async def purge(self, ctx, quantity: discord.Option(int), user: discord.Option(discord.User, required=True, default=None)):
+        res = ""
         msg = []
         if user == None:
-            await ctx.channel.purge(limit=quantity)
-            res+=(f"purging {quantity} messages from the channel")
+            await ctx.channel.purge(limit = quantity)
+            res += (f"purging {quantity} messages from the channel")
             print(f"purging {quantity} messages from {ctx.channel}")
         else:
             async for m in ctx.channel.history():
@@ -27,7 +27,7 @@ class ModCommands(commands.Cog):
                     msg.append(m)
             await ctx.channel.delete_messages(msg)
             #await ctx.channel.purge(limit=quantity, check=lambda msg: msg.author == user)
-            res+=(f"purging {quantity} messages from {user} in the channel")
+            res += (f"purging {quantity} messages from {user} in the channel")
             print(f"purging {quantity} messages from {user} in {ctx.channel}")
         await ctx.respond(res)
 
@@ -46,20 +46,20 @@ class SetupCommands(commands.Cog):
 
     @slash_command(name="setlogchannel", description="Set main channel for server logs")
     @commands.has_permissions(administrator=True)
-    async def set_log_channel(self, ctx, channel: discord.Option(discord.TextChannel, required = True, default = None)):
+    async def set_log_channel(self, ctx, channel: discord.Option(discord.TextChannel, required=True, default=None)):
         try:
 
             # Check for existing guild entry in database
-            checkDbForEntry = "SELECT * FROM `ServerInfo` WHERE guild_id="+str(ctx.guild.id)
+            checkDbForEntry = "SELECT * FROM `ServerInfo` WHERE guild_id=" + str(ctx.guild.id)
             checkDb_cursor = self.db_connection.cursor()
             checkDb_cursor.execute(checkDbForEntry)
             present = checkDb_cursor.fetchall()
             checkDb_cursor.close()
 
             # If no entry found, insert new entry with NULL modules enabled
-            if(len(present)==0):
+            if(len(present) == 0):
                 db_cursor = self.db_connection.cursor()
-                sql = "INSERT INTO `ServerInfo` VALUES (\'"+str(ctx.guild.id)+"\', \'"+str(channel.id)+"\', \""+ModuleStringHelper.moduleStringFiller("")+"\")"
+                sql = "INSERT INTO `ServerInfo` VALUES (\'" + str(ctx.guild.id) + "\', \'" + str(channel.id) + "\', \"" + ModuleStringHelper.moduleStringFiller("") + "\")"
                 db_cursor.execute(sql)
                 self.db_connection.commit()
                 db_cursor.close()
@@ -67,9 +67,9 @@ class SetupCommands(commands.Cog):
                 # Success Responses to log channel and channel called in
                 await ctx.respond("Logging enabled for this server")
                 await channel.send("Logs enabled in this channel")
-            if(len(present)==1):
+            if(len(present) == 1):
                 db_cursor = self.db_connection.cursor()
-                sql = "UPDATE `ServerInfo` SET log_id="+str(channel.id)+" WHERE guild_id="+str(ctx.guild.id)
+                sql = "UPDATE `ServerInfo` SET log_id=" + str(channel.id) + " WHERE guild_id=" + str(ctx.guild.id)
                 db_cursor.execute(sql)
                 self.db_connection.commit()
                 db_cursor.close()
@@ -100,18 +100,18 @@ class SetupCommands(commands.Cog):
         # replace existing character in moduleString with 1
         moduleString = ''
         if module == str(0):
-            moduleString = "1"+guild_cache[2][1:]
+            moduleString = "1" + guild_cache[2][1:]
         else:
             for i in range(len(guild_cache[2])):
                 if str(i) == module:
-                    moduleString = guild_cache[2][:i]+'1'+guild_cache[2][i+1:]
+                    moduleString = guild_cache[2][:i] + '1' + guild_cache[2][i + 1:]
         
         # fill left over spots in moduleString
         moduleString = ModuleStringHelper.moduleStringFiller(moduleString)
 
         # update database
         db_cursor = self.db_connection.cursor()
-        sql = "UPDATE `ServerInfo` SET modules='"+str(moduleString)+"' WHERE guild_id="+str(ctx.guild.id)
+        sql = "UPDATE `ServerInfo` SET modules='" + str(moduleString) + "' WHERE guild_id=" + str(ctx.guild.id)
         db_cursor.execute(sql)
         self.db_connection.commit()
         db_cursor.close()
@@ -142,7 +142,7 @@ class SetupCommands(commands.Cog):
         else:
             for i in range(len(guild_cache[2])):
                 if str(i) == module:
-                    moduleString = guild_cache[2][:i]+'0'+guild_cache[2][i+1:]
+                    moduleString = guild_cache[2][:i] + '0'+guild_cache[2][i + 1:]
         
         # fill left over spots in moduleString
         moduleString = ModuleStringHelper.moduleStringFiller(moduleString)
@@ -164,6 +164,9 @@ class SetupCommands(commands.Cog):
             if x[0] == ctx:
                 return x
 
+    async def check_module_enabled(self, ctx, module):
+        
+        return False
     
     async def reload_cache(self):
         db_cursor = self.db_connection.cursor()
@@ -178,7 +181,7 @@ class SetupCommands(commands.Cog):
 class ModuleStringHelper:
     def moduleStringFiller(mods):
         for i in range(0, 255-len(mods)):
-            mods+="0"
+            mods += "0"
         return mods
 
 
