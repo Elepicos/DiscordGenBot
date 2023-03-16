@@ -93,8 +93,11 @@ class SetupCommands(commands.Cog):
         discord.OptionChoice("Nickname Changed", "4"),
         discord.OptionChoice("Purge Command Used", "5")
     })):
+        
+        # load specific guild's cache information
         guild_cache = await self.get_guild_cache(ctx.guild.id)
 
+        # replace existing character in moduleString with 1
         moduleString = ''
         if module == str(0):
             moduleString = "1"+guild_cache[2][1:]
@@ -102,14 +105,18 @@ class SetupCommands(commands.Cog):
             for i in range(len(guild_cache[2])):
                 if str(i) == module:
                     moduleString = guild_cache[2][:i]+'1'+guild_cache[2][i+1:]
+        
+        # fill left over spots in moduleString
         moduleString = ModuleStringHelper.moduleStringFiller(moduleString)
 
+        # update database
         db_cursor = self.db_connection.cursor()
         sql = "UPDATE `ServerInfo` SET modules='"+str(moduleString)+"' WHERE guild_id="+str(ctx.guild.id)
         db_cursor.execute(sql)
         self.db_connection.commit()
         db_cursor.close()
 
+        # reload cache with new info and respond to command
         await self.reload_cache()
         await ctx.respond("Module enabled")
 
@@ -124,8 +131,11 @@ class SetupCommands(commands.Cog):
         discord.OptionChoice("Nickname Changed", "4"),
         discord.OptionChoice("Purge Command Used", "5")
         })):
+
+        # load specific guild's cache information
         guild_cache = await self.get_guild_cache(ctx.guild.id)
 
+        # replace existing character in moduleString with 0
         moduleString = ''
         if module == str(0):
             moduleString = '0'+guild_cache[2][1:]
@@ -133,22 +143,28 @@ class SetupCommands(commands.Cog):
             for i in range(len(guild_cache[2])):
                 if str(i) == module:
                     moduleString = guild_cache[2][:i]+'0'+guild_cache[2][i+1:]
+        
+        # fill left over spots in moduleString
         moduleString = ModuleStringHelper.moduleStringFiller(moduleString)
 
+        #update database
         db_cursor = self.db_connection.cursor()
         sql = "UPDATE `ServerInfo` SET modules='"+str(moduleString)+"' WHERE guild_id="+str(ctx.guild.id)
         db_cursor.execute(sql)
         self.db_connection.commit()
         db_cursor.close()
 
+        # reload cache with new info and respond to command
         await self.reload_cache()
         await ctx.respond("Module disabled")
 
     async def get_guild_cache(self, ctx):
+        # finds guild with id given by ctx and returns db entry with info
         for x in self.bot.local_db_cache:
             if x[0] == ctx:
                 return x
 
+    
     async def reload_cache(self):
         db_cursor = self.db_connection.cursor()
         db_cursor.execute("SELECT * FROM ServerInfo")
