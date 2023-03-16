@@ -8,4 +8,6 @@ class ModuleListeners(commands.Cog):
         self.bot = bot
         self.db_connection = db_connection
 
-    
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        
