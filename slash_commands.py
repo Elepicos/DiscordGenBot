@@ -164,7 +164,6 @@ class ModuleStringHelper:
         for i in range(0, 255-len(mods)):
             mods+="0"
         return mods
-    
 
 
 
